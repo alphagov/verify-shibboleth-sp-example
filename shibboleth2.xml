@@ -1,0 +1,204 @@
+<!--
+Common design decisions:
+
+We promote https only instead of http. By default the Shibboleth messages containing user attributes are encrypted. Therefore, they can also be sent via the insecure HTTP protocol. However, successfully authenticated Shibboleth users accessing a web page via HTTP are prone to session hijacking attacks.
+
+We provide only configurations that override the defaults in order to keep it manageable.
+
+The same configuration file should work for IIS and Apache.
+
+This configuration is for shibboleth 2.6
+-->
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPShibbolethXM
+  - Instruct on logger
+  - Please do not change unsafeChars
+  - Use https for allowedSchemes
+  - clockSkew should not be more than 3 mins. Servers should be set up to have correct date 
+  - and time. The clockSkew should be used only to accomodate lag between network
+  - connections.
+  -->
+<SPConfig xmlns="urn:mace:shibboleth:2.0:native:sp:config"
+          xmlns:conf="urn:mace:shibboleth:2.0:native:sp:config"
+          xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+          xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+          xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+          allowedSchemes="https only"
+          clockSkew="180">
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPInProcess
+  - Required for IIS, optional otherwise.
+  - spoofKey should be a long string (set by default on windows/IIS)
+  -->
+    <InProcess
+          spoofKey="some-random-string">
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPISAPI
+  - needed on IIS, because it lacks support on these features
+  - safeHeaderNames should be true to prevent hacks with unexpected characters
+  -->
+          <ISAPI
+              safeHeaderNames="true">
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPISAPI
+  - Specify the site protected by shibboleth. Only needed for IIS.
+  - id should be the id issued by IIS. See IIS web site summary to get the value.
+  - name should be the canonical host name of the protected web site
+  -->
+              <Site id="IIS-instance-id-of-the-protected-web-site"
+                  name="service.provider.canonical.host.name"
+                  scheme="https"
+                  sslport="443">
+              </Site>
+          </ISAPI>
+
+    </InProcess>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapper
+  - redirectToSSL is specified in order to ensure ssl is used
+  -->
+    <RequestMapper
+        type="Native"
+        exportStdVars="false">
+        <RequestMap>
+            <Host name="localhost">
+<!-- 
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapPath
+  - name should be the path portion of the url
+  - There must be one Path element for each protected page of the application.
+  -->
+                <Path
+                    name="/some/secure/path"
+                    authType="shibboleth" 
+                    requireSession="true"
+                    redirectToSSL="443" />
+            </Host>
+        </RequestMap>
+    </RequestMapper>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplication
+  - entityID should be the entity id of the relying party
+  - requireAuthenticatedEncryption should be set true because Verify does encryption
+  - signing has to be “front” because Verify requires HTTP-POST to be used for messaging
+  - encryptionAlg, signingAlg, digestAlg are required to be sha256
+  -->
+    <ApplicationDefaults
+        entityID="http://service-provider-entity-id"
+        requireAuthenticatedEncryption="true"
+        REMOTE_USER="persistent-id"
+        cipherSuites="ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4:!kEDH;"
+        signing="front"
+        requireSignedAssertions="true"
+        encryptionAlg="http://www.w3.org/2001/04/xmlenc#sha256"
+        signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+        digestAlg="http://www.w3.org/2001/04/xmlenc#sha256">
+
+
+
+
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPSessions
+  - lifetime and timeout should be set to a value that is approppriate to the application.
+  - cookieProps is https to make sure the cookies are set for https usage only.
+  - redirectLimit is used to prevent phishing attacks.
+  -->
+        <Sessions
+            lifetime="28800"
+            timeout="3600"
+            relayState="ss:mem"
+            cookieProps="https"
+            redirectLimit="exact">
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPServiceSSO
+  - Creates a “Login” handler
+  - entitydId should be the verify entityid
+  - The value should be SAML2 because Verify only supports the SAML2 protocol
+  -->
+            <SSO entityID="https://signin.service.gov.uk">SAML2</SSO>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPServiceLogout
+  - Creates a “/Logout” Handler
+  -->
+            <Logout>SAML2 Local</Logout>
+
+        </Sessions>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPErrors
+  - redirectErrors should point to a page that can handle errors from shibboleth
+  -->
+        <Errors
+            redirectErrors="https://service-provider-error-page" />
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPMetadataProvider
+  - uri should point to the MSA instance of the service provider
+  - backingFilePath should be used to accomodate downtimes
+  - reloadInterval must be 10 minutes due to Verify recommendation. 10 minutes should be
+  - short enough to accomodate metadata changes by Verify and not create unnecessary traffic 
+  - towards Verify.
+  -->
+        <MetadataProvider
+            type="XML"
+            uri="http://MSA_HOSTNAME:MSA_PORT/matching-service/SAML2/metadata"
+            backingFilePath="federation-metadata.xml"
+            reloadInterval="10">
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPMetadataFilter
+  - Require a validity check on the metadata
+  - maxValidityInterval is set to 28 days. Verify recreates metadata at least every 2 weeks.
+  -->
+            <MetadataFilter
+                type="RequireValidUntil"
+                maxValidityInterval="2419200"/>
+
+        </MetadataProvider>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPAttributeExtractor
+  - see the example attribute-map.xml for what the configuration should look like.
+  -->
+        <AttributeExtractor
+            type="XML"
+            validate="true"
+            reloadChanges="false"
+            path="attribute-map.xml" />
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPAttributeFilter
+  - Default filtering policy for recognized attributes, lets other data pass.
+  -->
+        <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPCredentialResolver
+  - key should be an absolute file path to the private service provider signing key
+  - certificate should be an absolute file path to the public service provider signing key
+  -->
+        <CredentialResolver
+            type="File"
+            use="signing"
+            key="/path/to/sp/signing/private/key"
+            certificate="/path/to/sp/signing/public/cert" />
+
+    </ApplicationDefaults>
+
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPShibbolethXML
+  - Policies that determine how to process and authenticate runtime messages
+  -->
+    <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
+
+    <!-- Low-level configuration about protocols and bindings available for use. -->
+    <ProtocolProvider type="XML" validate="true" reloadChanges="false" path="protocols.xml"/>
+
+</SPConfig>

@@ -1,0 +1,51 @@
+<Attributes
+    xmlns="urn:mace:shibboleth:2.0:attribute-map" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<!--
+  - An attribute-tag should exist for each user-attribute that the service wants to get from
+  - Verify.
+  - See http://alphagov.github.io/rp-onboarding-tech-docs/pages/ms/msCua.html for a list of
+  - possible attributes.
+  - These will be exposed to the application in a successful login flow.
+  - The values will be available in the request headers with the "id" as the header key
+  -->
+    <Attribute
+        name="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+        id="persistent-id">
+        <AttributeDecoder
+            xsi:type="NameIDAttributeDecoder" 
+            formatter="$Name"
+            defaultQualifiers="true"/>
+    </Attribute>
+
+    <Attribute name="FIRST_NAME_VERIFIED" id="first-name-verified">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" />
+    </Attribute>
+
+    <Attribute name="FIRST_NAME" id="first-name">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" />
+    </Attribute>
+
+    <Attribute name="SURNAME_VERIFIED" id="surname-verified">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" />
+    </Attribute>
+
+    <Attribute name="SURNAME" id="surname">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" />
+    </Attribute>
+
+    <Attribute name="CURRENT_ADDRESS_VERIFIED" id="current-address-verified">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" />
+    </Attribute>
+
+<!--
+  - XMLAttributeDecoder provides a base64 encoded XML string
+  - If you use this decoder, you will have to decode the base64 string and parse the
+  - provided xml.
+  -->
+    <Attribute name="CURRENT_ADDRESS" id="current-address">
+        <AttributeDecoder xsi:type="XMLAttributeDecoder" />
+    </Attribute>
+
+</Attributes>
