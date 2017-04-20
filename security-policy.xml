@@ -22,15 +22,6 @@
     </Policy>
 
     <!--
-    This policy is a place-holder for use of assertions in metadata
-    as a way of attaching signed information about particular IdPs.
-    -->
-    <Policy id="entity-attributes">
-        <PolicyRule type="Conditions"/>
-        <PolicyRule type="XMLSigning" errorFatal="true"/>
-    </Policy>
-
-    <!--
       - Disables known weak algorithms.
       - More info at the release notes of 2.5
       - see: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPReleaseNotes#NativeSPReleaseNotes-Shibboleth2.5.0
