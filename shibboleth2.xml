@@ -1,18 +1,22 @@
 <!--
-Common design decisions:
-
-We promote https only instead of http. By default the Shibboleth messages containing user attributes are encrypted. Therefore, they can also be sent via the insecure HTTP protocol. However, successfully authenticated Shibboleth users accessing a web page via HTTP are prone to session hijacking attacks.
-
-We provide only configurations that override the defaults in order to keep it manageable.
-
-The same configuration file should work for IIS and Apache.
-
-This configuration is for shibboleth 2.6
--->
+  - Common design decisions:
+  -
+  - We promote https only instead of http. By default the Shibboleth messages
+  - containing user attributes are encrypted. Therefore, they can also be sent
+  - via the insecure HTTP protocol. However, successfully authenticated Shibboleth
+  - users accessing a web page via HTTP are prone to session hijacking attacks.
+  -
+  - We provide only configurations that override the defaults in order to keep it simple.
+  -
+  - The same configuration file should work for IIS and Apache.
+  -
+  - This configuration is for shibboleth 2.6
+  -
+  - Values that need attention are writen IN-CAPITALS
+  -->
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPShibbolethXM
-  - Instruct on logger
   - Please do not change unsafeChars
   - Use https for allowedSchemes
   - clockSkew should not be more than 3 mins. Servers should be set up to have correct date 
@@ -33,7 +37,7 @@ This configuration is for shibboleth 2.6
   - spoofKey should be a long string (set by default on windows/IIS)
   -->
     <InProcess
-          spoofKey="some-random-string">
+          spoofKey="SOME-RANDOM-STRING">
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPISAPI
@@ -48,8 +52,8 @@ This configuration is for shibboleth 2.6
   - id should be the id issued by IIS. See IIS web site summary to get the value.
   - name should be the canonical host name of the protected web site
   -->
-              <Site id="IIS-instance-id-of-the-protected-web-site"
-                  name="service.provider.canonical.host.name"
+              <Site id="IIS-ID-OF-THE-WEB-SITE"
+                  name="SERVICE-PROVIDER-CANONICAL-HOST-NAME"
                   scheme="https"
                   sslport="443">
               </Site>
@@ -68,11 +72,11 @@ This configuration is for shibboleth 2.6
             <Host name="localhost">
 <!-- 
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapPath
-  - name should be the path portion of the url
+  - name should be the path portion of the url e.g.: /page/requireing/login
   - There must be one Path element for each protected page of the application.
   -->
                 <Path
-                    name="/some/secure/path"
+                    name="SOME-SECURED-PATH"
                     authType="shibboleth" 
                     requireSession="true"
                     redirectToSSL="443" />
@@ -82,13 +86,13 @@ This configuration is for shibboleth 2.6
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplication
-  - entityID should be the entity id of the relying party
+  - entityID should be the entity id of the relying party. e.g http://entity-id
   - requireAuthenticatedEncryption should be set true because Verify does encryption
   - signing has to be “front” because Verify requires HTTP-POST to be used for messaging
   - encryptionAlg, signingAlg, digestAlg are required to be sha256
   -->
     <ApplicationDefaults
-        entityID="http://service-provider-entity-id"
+        entityID="SERVICE-PROVIDER-ENTITY-ID"
         requireAuthenticatedEncryption="true"
         REMOTE_USER="persistent-id"
         cipherSuites="ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4:!kEDH;"
@@ -97,10 +101,6 @@ This configuration is for shibboleth 2.6
         encryptionAlg="http://www.w3.org/2001/04/xmlenc#sha256"
         signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
         digestAlg="http://www.w3.org/2001/04/xmlenc#sha256">
-
-
-
-
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPSessions
@@ -134,9 +134,10 @@ This configuration is for shibboleth 2.6
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPErrors
   - redirectErrors should point to a page that can handle errors from shibboleth
+  - e.g.: https://example.com/shibboleth-error
   -->
         <Errors
-            redirectErrors="https://service-provider-error-page" />
+            redirectErrors="SERVICE-PROVIDER-ERROR-PAGE" />
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPMetadataProvider
@@ -148,7 +149,7 @@ This configuration is for shibboleth 2.6
   -->
         <MetadataProvider
             type="XML"
-            uri="http://MSA_HOSTNAME:MSA_PORT/matching-service/SAML2/metadata"
+            uri="http://MSA-HOSTNAME:MSA-PORT/matching-service/SAML2/metadata"
             backingFilePath="federation-metadata.xml"
             reloadInterval="10">
 
@@ -172,12 +173,6 @@ This configuration is for shibboleth 2.6
             validate="true"
             reloadChanges="false"
             path="attribute-map.xml" />
-
-<!--
-  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPAttributeFilter
-  - Default filtering policy for recognized attributes, lets other data pass.
-  -->
-        <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPCredentialResolver
