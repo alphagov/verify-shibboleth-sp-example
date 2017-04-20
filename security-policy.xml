@@ -9,7 +9,7 @@
     The predefined policy enforces replay/freshness, standard
     condition processing, and permits signing and client TLS.
     -->
-    <Policy id="default" validate="false">
+    <Policy id="default" validate="true">
         <PolicyRule type="MessageFlow" checkReplay="true" expires="60"/>
         <PolicyRule type="Conditions">
             <PolicyRule type="Audience"/>
