@@ -184,6 +184,18 @@
             key="/path/to/sp/signing/private/key"
             certificate="/path/to/sp/signing/public/cert" />
 
+<!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPCredentialResolver
+  - key should be an absolute file path to the private service provider encryption key
+  - certificate should be an absolute file path to the public service provider encryption cert
+  -->
+        <CredentialResolver
+                type="File"
+                use="encryption"
+                key="/path/to/sp/encryption/private/key"
+                certificate="/path/to/sp/encryption/public/cert" />
+
+
     </ApplicationDefaults>
 
 <!--
