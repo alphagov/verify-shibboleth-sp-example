@@ -10,6 +10,12 @@
   - These will be exposed to the application in a successful login flow.
   - The values will be available in the request headers with the "id" as the header key
   -->
+
+<!--
+  - persistent-id: This is the only attribute you should need for normal interaction with verify.
+  - It will be the "hashed persistent identifier", which you should use to look up the user in your
+  - matching repository.
+  -->
     <Attribute
         name="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
         id="persistent-id">
@@ -19,6 +25,12 @@
             defaultQualifiers="true"/>
     </Attribute>
 
+<!--
+  - User Account Creation attributes: these attributes are used to read attributes from a user account
+  - creation response. Verify will only send your service the attributes it has been configured to send.
+  - For a full list of attributes, see:
+  - http://alphagov.github.io/rp-onboarding-tech-docs/pages/ms/msCua.html#list-cua-attributes
+  -->
     <Attribute name="FIRST_NAME_VERIFIED" id="first-name-verified">
         <AttributeDecoder xsi:type="StringAttributeDecoder" />
     </Attribute>
