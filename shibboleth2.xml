@@ -93,11 +93,9 @@
   -->
     <ApplicationDefaults
         entityID="SERVICE-PROVIDER-ENTITY-ID"
-        requireAuthenticatedEncryption="true"
         REMOTE_USER="persistent-id"
         signing="front"
         requireSignedAssertions="true"
-        encryptionAlg="http://www.w3.org/2001/04/xmlenc#sha256"
         signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
         digestAlg="http://www.w3.org/2001/04/xmlenc#sha256">
 
@@ -126,7 +124,7 @@
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPServiceLogout
   - Creates a “/Logout” Handler
   -->
-            <Logout>SAML2 Local</Logout>
+            <Logout>Local</Logout>
 
         </Sessions>
 
@@ -150,7 +148,7 @@
             type="XML"
             uri="http://MSA-HOSTNAME:MSA-PORT/matching-service/SAML2/metadata"
             backingFilePath="federation-metadata.xml"
-            reloadInterval="10">
+            reloadInterval="600">
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPMetadataFilter
