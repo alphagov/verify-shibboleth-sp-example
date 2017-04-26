@@ -51,3 +51,17 @@ Things you'll need to replace
 * `<Location /secure>` - Configure the paths you want Shibboleth to require a valid
   session for.
 
+Design Decisions
+----------------
+
+We promote https only instead of http. By default the Shibboleth messages
+containing user attributes are encrypted. Therefore, they can also be sent
+via the insecure HTTP protocol. However, successfully authenticated Shibboleth
+users accessing a web page via HTTP are prone to session hijacking attacks.
+
+We provide only configurations that override the defaults in order to keep it simple.
+
+This configuration is for shibboleth 2.6
+
+Values that need attention are writen IN-CAPITALS.
+
