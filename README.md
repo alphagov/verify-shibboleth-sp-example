@@ -33,9 +33,6 @@ Things you'll need to replace
 
 ### For IIS
 
-* `spoofKey="SOME-RANDOM-STRING">` - this should be set to some reasonably long random
-  value. See [the Shibboleth
-  docs](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPInProcess).
 * `Site`: attribute `id="IIS-ID-OF-THE-WEB-SITE"` - this should be the site id in IIS,
   which you can see by looking at "Advanced Settings" for a website in the IIS interface.
 * `Site`: attribute `name="SERVICE-PROVIDER-CANONICAL-HOST-NAME"` - should be the host of
@@ -45,6 +42,9 @@ Things you'll need to replace
 
 ### For Apache
 
+* `spoofKey="SOME-RANDOM-STRING">` - this should be set to some reasonably long random
+  value. See [the Shibboleth
+  docs](https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPInProcess).
 * `LoadModule mod_shib /usr/local/opt/shibboleth-sp/lib/shibboleth/mod_shib_24.so` - this
   path needs to point your `mod_shib_24.so` (by default this will be in the shibboleth
   installation)
