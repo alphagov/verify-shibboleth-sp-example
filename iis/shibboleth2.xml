@@ -16,11 +16,9 @@
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPInProcess
-  - Required for IIS, optional otherwise.
-  - spoofKey should be a long string (set by default on windows/IIS)
+  - spoofKey should be a long string (set by default on IIS so not required)
   -->
-    <InProcess
-          spoofKey="SOME-RANDOM-STRING">
+    <InProcess>
 
 <!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPISAPI

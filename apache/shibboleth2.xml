@@ -15,6 +15,12 @@
           clockSkew="180">
 
 <!--
+  - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPInProcess
+  - spoofKey should be a long hard-to-guess string
+  -->
+    <InProcess spoofKey="SOME-RANDOM-STRING" />
+
+<!--
   - https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplication
   - entityID should be the entity id of the relying party. e.g http://entity-id
   - requireAuthenticatedEncryption should be set true because Verify does encryption
